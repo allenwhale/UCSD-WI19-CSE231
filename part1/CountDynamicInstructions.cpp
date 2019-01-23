@@ -63,12 +63,10 @@ struct CountDynamicInstructions : public FunctionPass {
                 true,                               //Constant
                 GlobalVariable::InternalLinkage,    //linkage
                 ConstantArray::get(array_type, values));
-            Value* idx[2] = { ConstantInt::get(Type::getInt32Ty(C), 0),
-                              ConstantInt::get(Type::getInt32Ty(C), 0) };
             vector<Value*> args;
             args.push_back(ConstantInt::get(Type::getInt32Ty(C), len));
-            args.push_back(builder.CreateInBoundsGEP(global_keys, idx));
-            args.push_back(builder.CreateInBoundsGEP(global_values, idx));
+            args.push_back(builder.CreatePointerCast(global_keys, Type::getInt32PtrTy(C)));
+            args.push_back(builder.CreatePointerCast(global_values, Type::getInt32PtrTy(C)));
             builder.SetInsertPoint(blk->getTerminator());
             builder.CreateCall(update, args);
             if (blk->getTerminator()->getOpcode() == 1) {
